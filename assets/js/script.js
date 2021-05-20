@@ -8,7 +8,7 @@ function init() {
   const windSpd = document.getElementById("wind");
   const humidity = document.getElementById("humidity");
   const uv = document.getElementById("uv");
-  const history = document.getElementById("history");
+  const historyEl = document.getElementById("history");
   let searchHistory = JSON.parse(localStorage.getItem("search")) || [];
 
   const APIKey = "057144c114d69220df103415f396063b";
@@ -40,7 +40,7 @@ function init() {
       );
       currentIcon.setAttribute("alt", response.data.weather[0].description);
       temp.innerHTML =
-        "Temperature: " + k2f(response.data.main.temp) + " &#176F";
+        "Temperature: " + kTof(response.data.main.temp) + " &#176F";
 
       windSpd.innerHTML = "Wind Speed: " + response.data.wind.speed + " MPH";
       humidity.innerHTML = "Humidity: " + response.data.main.humidity + "%";
@@ -102,7 +102,7 @@ function init() {
           const forecastTempEl = document.createElement("p");
           forecastTempEl.innerHTML =
             "Temp: " +
-            k2f(response.data.list[forecastIndex].main.temp) +
+            kTof(response.data.list[forecastIndex].main.temp) +
             " &#176F";
           forecastEls[i].append(forecastTempEl);
           const forecastWindEl = document.createElement("p");
@@ -122,18 +122,19 @@ function init() {
   }
 
   searchBtn.addEventListener("click", function () {
-    // if (cityInput.value === "") {
-    //   alert("Please Enter a City");
-    // }
-
-    const search = cityInput.value;
-    getWeather(search);
-    searchHistory.push(search);
-    localStorage.setItem("search", JSON.stringify(searchHistory));
-    renderSearchHistory();
+    if (cityInput.value.length == 0) {
+      alert("Please Enter a City");
+      console.log(city.value.length);
+    } else {
+      const search = cityInput.value;
+      getWeather(search);
+      searchHistory.push(search);
+      localStorage.setItem("search", JSON.stringify(searchHistory));
+      renderSearchHistory();
+    }
   });
-  function k2f(K) {
-    return Math.floor((K - 273.15) * 1.8 + 32);
+  function kTof(k) {
+    return Math.floor((k - 273.15) * 1.8 + 32);
   }
 
   clearBtn.addEventListener("click", function () {
@@ -142,7 +143,7 @@ function init() {
   });
 
   function renderSearchHistory() {
-    history.innerHTML = "";
+    historyEl.innerHTML = "";
     for (let i = 0; i < searchHistory.length; i++) {
       const historyItem = document.createElement("input");
       historyItem.setAttribute("type", "text");
@@ -152,7 +153,7 @@ function init() {
       historyItem.addEventListener("click", function () {
         getWeather(historyItem.value);
       });
-      history.append(historyItem);
+      historyEl.append(historyItem);
     }
   }
 
